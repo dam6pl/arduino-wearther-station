@@ -30,23 +30,23 @@ LightDependentResistor photocell(A0, 1200, LightDependentResistor::GL5528);
  */
 void setup()
 {
-	Serial.begin(115200);
+  Serial.begin(115200);
 
-	//Initialize Temperature and Humidity sensor on D3 pin
-	pinMode(DHTPin, INPUT);
-	dht.begin();
+  //Initialize Temperature and Humidity sensor on D3 pin
+  pinMode(DHTPin, INPUT);
+  dht.begin();
 
-	//Initialize Pressure and Temperature sensor on D1 and D2 pins
-	mpl115a2.begin();
+  //Initialize Pressure and Temperature sensor on D1 and D2 pins
+  mpl115a2.begin();
 
-	//Initialize WIFI connection
-	WiFi.begin(WIFI_SSID, WIFI_PASS);
+  //Initialize WIFI connection
+  WiFi.begin(WIFI_SSID, WIFI_PASS);
 
-	while (WiFi.status() != WL_CONNECTED)
-	{
-		delay(500);
-		Serial.println('Waiting for WIFI connection...');
-	}
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(500);
+    Serial.println('Waiting for WIFI connection...');
+  }
 }
 
 /**
@@ -54,30 +54,30 @@ void setup()
  */
 void loop()
 {
-	float temperature[NUMBER_OF_MEASUREMENTS];
-	float humidity[NUMBER_OF_MEASUREMENTS];
-	float pressure[NUMBER_OF_MEASUREMENTS];
-	float illuminance[NUMBER_OF_MEASUREMENTS];
+  float temperature[NUMBER_OF_MEASUREMENTS];
+  float humidity[NUMBER_OF_MEASUREMENTS];
+  float pressure[NUMBER_OF_MEASUREMENTS];
+  float illuminance[NUMBER_OF_MEASUREMENTS];
 
-	for (int i = 0; i < NUMBER_OF_MEASUREMENTS; i++)
-	{
-		temperature[i] = getTemperature();
-		humidity[i] = getHumidity();
-		pressure[i] = getPressure();
-		illuminance[i] = getIlluminance();
+  for (int i = 0; i < NUMBER_OF_MEASUREMENTS; i++)
+  {
+    temperature[i] = getTemperature();
+    humidity[i] = getHumidity();
+    pressure[i] = getPressure();
+    illuminance[i] = getIlluminance();
 
-		Serial.println(temperature[i]);
-		Serial.println(humidity[i]);
-		Serial.println(pressure[i]);
-		Serial.println(illuminance[i]);
-		Serial.println();
+    Serial.println(temperature[i]);
+    Serial.println(humidity[i]);
+    Serial.println(pressure[i]);
+    Serial.println(illuminance[i]);
+    Serial.println();
 
-		delay(TIME_BETWEEN_MEASUREMENTS);
-	}
+    delay(TIME_BETWEEN_MEASUREMENTS);
+  }
 
-	sendToAPI(0, 0, 0, 0);
+  sendToAPI(0, 0, 0, 0);
 
-	delay(5000);
+  delay(5000);
 }
 
 /**
@@ -87,23 +87,23 @@ void loop()
  */
 float getTemperature()
 {
-	float t1 = dht.readTemperature();
-	float t2 = mpl115a2.getTemperature();
+  float t1 = dht.readTemperature();
+  float t2 = mpl115a2.getTemperature();
 
-	if (isnan(t1) && !isnan(t2))
-	{
-		return t2;
-	}
-	else if (!isnan(t1) && isnan(t2))
-	{
-		return t1;
-	}
-	else if (isnan(t1) && isnan(t2))
-	{
-		return NULL;
-	}
+  if (isnan(t1) && !isnan(t2))
+  {
+    return t2;
+  }
+  else if (!isnan(t1) && isnan(t2))
+  {
+    return t1;
+  }
+  else if (isnan(t1) && isnan(t2))
+  {
+    return NULL;
+  }
 
-	return (t1 + t2) / 2;
+  return (t1 + t2) / 2;
 }
 
 /**
@@ -113,14 +113,14 @@ float getTemperature()
  */
 float getHumidity()
 {
-	float h = dht.readHumidity();
+  float h = dht.readHumidity();
 
-	if (isnan(h))
-	{
-		return NULL;
-	}
+  if (isnan(h))
+  {
+    return NULL;
+  }
 
-	return h;
+  return h;
 }
 
 /**
@@ -130,14 +130,14 @@ float getHumidity()
  */
 float getPressure()
 {
-	float p = mpl115a2.getPressure();
+  float p = mpl115a2.getPressure();
 
-	if (isnan(p))
-	{
-		return NULL;
-	}
+  if (isnan(p))
+  {
+    return NULL;
+  }
 
-	return p * 62.3F;
+  return p * 62.3F;
 }
 
 /**
@@ -147,14 +147,14 @@ float getPressure()
  */
 float getIlluminance()
 {
-	float i = photocell.getCurrentLux();
+  float i = photocell.getCurrentLux();
 
-	if (isnan(i))
-	{
-		return NULL;
-	}
+  if (isnan(i))
+  {
+    return NULL;
+  }
 
-	return i;
+  return i;
 }
 
 /**
@@ -166,35 +166,35 @@ float getIlluminance()
   * @param float illuminance
   */
 void sendToAPI(
-	float temperature,
-	float humidity,
-	float pressure,
-	float illuminance)
+    float temperature,
+    float humidity,
+    float pressure,
+    float illuminance)
 {
-	if (WiFi.status() == WL_CONNECTED)
-	{
-		HTTPClient http;
+  if (WiFi.status() == WL_CONNECTED)
+  {
+    HTTPClient http;
 
-		http.begin(API_URL, API_FINGERPINT);
-		http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+    http.begin(API_URL, API_FINGERPINT);
+    http.addHeader("Content-Type", "application/x-www-form-urlencoded");
 
-		String params = "token=" + API_TOKEN + "&station_id=" + API_STATION_ID + "&temperature=" + temperature + "&humidity=" + humidity + "&pressure=" + pressure + "&illuminance=" + illuminance;
+    String params = "token=" + API_TOKEN + "&station_id=" + API_STATION_ID + "&temperature=" + temperature + "&humidity=" + humidity + "&pressure=" + pressure + "&illuminance=" + illuminance;
 
-		int httpCode = http.POST(params);
-		String payload = http.getString();
+    int httpCode = http.POST(params);
+    String payload = http.getString();
 
-		if (httpCode > 0)
-		{
-			Serial.println(httpCode);
-			Serial.println(payload);
-		}
-		else
-		{
-			Serial.println(http.errorToString(httpCode).c_str());
-		}
+    if (httpCode > 0)
+    {
+      Serial.println(httpCode);
+      Serial.println(payload);
+    }
+    else
+    {
+      Serial.println(http.errorToString(httpCode).c_str());
+    }
 
-		Serial.println();
+    Serial.println();
 
-		http.end();
-	}
+    http.end();
+  }
 }
