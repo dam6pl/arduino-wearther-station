@@ -2,6 +2,8 @@
 
 This is a C++ (Arduino) code for use in the ESP8266 NodeMCU v2. In this case, the ESP module contains data from 3 sensors: DHT22 (temperature, humidity), MPL115A2 (temperature, pressure) and GL5528 (illuminance). In default the measurements are make in 1 minute intervals and sending to the API one at 10 minutes (average of 10 measurements).
 
+![](esp8266.png)
+
 **Author:** [Damian Nowak](mailto:me@dnowak.dev)
 
 ## Contains
