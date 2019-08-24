@@ -40,7 +40,7 @@ void setup()
   dht.begin();
 
   //Initialize Pressure and Temperature sensor on D1 and D2 pins
-  mpl115a2.begin();
+  mpl115a2.begin(D1, D2);
 
   //Initialize WIFI connection
   WiFi.begin(WIFI_SSID, WIFI_PASS);
@@ -132,7 +132,7 @@ float getPressure()
     return NULL;
   }
 
-  return p * 62.3F;
+  return p * 10; //Change from kPa to hPa
 }
 
 /**
