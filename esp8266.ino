@@ -3,8 +3,7 @@ const String WIFI_SSID = "WLAN-DYG8HA";
 const String WIFI_PASS = "D80nm8A0Mgg7G8F";
 const int NUMBER_OF_MEASUREMENTS = 10;
 const int TIME_BETWEEN_MEASUREMENTS = 60000; //1 minute
-const String API_URL = "https://weather-station-api.herokuapp.com/proxy";
-const String API_ENDPOINT = "/v1/measurements";
+const String API_URL = "https://weather-station-api.herokuapp.com//v1/measurements";
 const String API_FINGERPINT = "08 3B 71 72 02 43 6E CA ED 42 86 93 BA 7E DF 81 C4 BC 62 30"; //https://www.grc.com/fingerprints.htm
 const String API_TOKEN = "1aVtaMl1gQ7qYg5Wa5htY1V2TVk8s9ZHLVykd8e9cSfUKQ50jSTNL2h5M7dX9V8VyyIPfmcQUVhecvXa";
 const int API_STATION_ID = 1;
@@ -174,7 +173,7 @@ void sendToAPI(
     http.addHeader("Content-Type", "application/x-www-form-urlencoded");
     http.addHeader("X-Token-Auth", API_TOKEN);
 
-    String params = "endpoint=" + API_ENDPOINT + "&station_id=" + API_STATION_ID + "&temperature=" + temperature + "&humidity=" + humidity + "&pressure=" + pressure + "&illuminance=" + illuminance;
+    String params = "station_id=" + API_STATION_ID + "&temperature=" + temperature + "&humidity=" + humidity + "&pressure=" + pressure + "&illuminance=" + illuminance;
 
     int httpCode = http.POST(params);
     String payload = http.getString();
